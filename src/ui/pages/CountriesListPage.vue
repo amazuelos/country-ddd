@@ -2,12 +2,12 @@
   <div class="p-4">
     <!-- Filtros -->
     <CountriesFilters
-      v-model:search="search"
-      v-model:region="region"
+      class="mb-6"
+      :search="search"
+      :region="region"
       :regions="regions"
-      @search="onSearch"
-      @filter="onFilter"
-      class="my-6"
+      @update:search="onSearch"
+      @update:region="onFilter"
     />
 
     <!-- Estados de carga / error -->
@@ -33,80 +33,43 @@
   </div>
 </template>
 
-<script lang="ts">
-import { useCountriesStore } from "../stores/useCountriesStore";
-import { storeToRefs } from "pinia";
-import { useRouter } from "vue-router";
-import { computed, onMounted } from "vue";
+<script setup lang="ts">
+import { onMounted, computed } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
+import { useCountriesStore } from '../stores/useCountriesStore'
 
-import CountriesFilters from "../components/CountriesFilters.vue";
-import CountriesTable from "../components/CountriesTable.vue";
-import CountriesPagination from "../components/CountriesPagination.vue";
+import CountriesFilters from '../components/CountriesFilters.vue'
+import CountriesTable from '../components/CountriesTable.vue'
+import CountriesPagination from '../components/CountriesPagination.vue'
 
-export default {
-  name: "CountriesListPage",
-  components: {
-    CountriesFilters,
-    CountriesTable,
-    CountriesPagination,
-  },
-  setup() {
-    const countriesStore = useCountriesStore();
-    const {
-      countries,
-      filtered,
-      loading,
-      error,
-      search,
-      region,
-      page,
-      paginatedCountries,
-      totalPages,
-    } = storeToRefs(countriesStore);
-    const router = useRouter();
+const countriesStore = useCountriesStore()
+const { countries, filtered, paginatedCountries, loading, error, search, region, page, totalPages } = storeToRefs(countriesStore)
+const router = useRouter()
 
-    // Generar lista de regiones dinámicamente
-    const regions = computed(() => [
-      ...new Set(countries.value.map((c) => c.region).filter(Boolean)),
-    ]);
+// Handlers para filtros
+const onSearch = (val: string) => {
+  console.log('onSearch invoked:', val)
+  countriesStore.setSearch(val)
+}
 
-    // Fetch inicial
-    onMounted(() => {
-      countriesStore.fetchCountries();
-    });
+const onFilter = (val: string) => {
+  console.log('onFilter invoked:', val)
+  countriesStore.setRegion(val)
+}
 
-    // Métodos para filtros
-    const onSearch = () => countriesStore.setSearch(search.value);
-    const onFilter = () => countriesStore.setRegion(region.value);
+// Generar lista dinámica de regiones
+const regions = computed(() => [...new Set(countries.value.map(c => c.region).filter(Boolean))])
 
-    // Ir a detalle de país
-    const goToDetail = (country: any) => {
-      router.push({ name: "CountryDetail", params: { code: country.cca3 } });
-    };
-    // Favoritos
-    const toggleFavourite = (country: any) => countriesStore.toggleFavourite(country);
+// Fetch inicial de países
+onMounted(() => countriesStore.fetchCountries())
 
-    // Paginación
-    const nextPage = () => countriesStore.setPage(page.value + 1);
-    const prevPage = () => countriesStore.setPage(page.value - 1);
+// Funciones de acción
+const goToDetail = (country: any) => router.push({ name: 'CountryDetail', params: { code: country.cca3 } })
+const toggleFavourite = (country: any) => countriesStore.toggleFavourite(country)
+const nextPage = () => countriesStore.setPage(page.value + 1)
+const prevPage = () => countriesStore.setPage(page.value - 1)
 
-    return {
-      filtered,
-      loading,
-      error,
-      search,
-      region,
-      paginated: paginatedCountries,
-      page,
-      totalPages,
-      onSearch,
-      onFilter,
-      goToDetail,
-      toggleFavourite,
-      nextPage,
-      prevPage,
-      regions,
-    };
-  },
-};
+// Para pasar a la tabla
+const paginated = paginatedCountries
 </script>
