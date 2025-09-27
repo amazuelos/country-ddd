@@ -19,6 +19,9 @@
       &copy; 2025 Countries App
     </footer>
   </div>
+  <div class="bg-red-500 md:bg-blue-500 gap-4 p-4 my-6">
+    Test Tailwind
+  </div>
 </template>
 
 <script lang="ts">

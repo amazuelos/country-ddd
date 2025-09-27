@@ -34,67 +34,79 @@
 </template>
 
 <script lang="ts">
-import { useCountriesStore } from '../stores/useCountriesStore'
-import { storeToRefs } from 'pinia'
-import { useRouter } from 'vue-router'
-import { computed, onMounted } from 'vue'
+import { useCountriesStore } from "../stores/useCountriesStore";
+import { storeToRefs } from "pinia";
+import { useRouter } from "vue-router";
+import { computed, onMounted } from "vue";
 
-import CountriesFilters from '../components/CountriesFilters.vue'
-import CountriesTable from '../components/CountriesTable.vue'
-import CountriesPagination from '../components/CountriesPagination.vue'
+import CountriesFilters from "../components/CountriesFilters.vue";
+import CountriesTable from "../components/CountriesTable.vue";
+import CountriesPagination from "../components/CountriesPagination.vue";
 
 export default {
-  name: 'CountriesListPage',
+  name: "CountriesListPage",
   components: {
     CountriesFilters,
     CountriesTable,
-    CountriesPagination
+    CountriesPagination,
   },
   setup() {
-    const countriesStore = useCountriesStore()
-    const { countries, filtered, loading, error, search, region, page, paginatedCountries, totalPages } = storeToRefs(countriesStore)
-    const router = useRouter()
+    const countriesStore = useCountriesStore();
+    const {
+      countries,
+      filtered,
+      loading,
+      error,
+      search,
+      region,
+      page,
+      paginatedCountries,
+      totalPages,
+    } = storeToRefs(countriesStore);
+    const router = useRouter();
 
     // Generar lista de regiones dinámicamente
-    const regions = computed(() => [...new Set(countries.value.map(c => c.region).filter(Boolean))])
+    const regions = computed(() => [
+      ...new Set(countries.value.map((c) => c.region).filter(Boolean)),
+    ]);
 
     // Fetch inicial
     onMounted(() => {
-      countriesStore.fetchCountries()
-    })
+      countriesStore.fetchCountries();
+    });
 
     // Métodos para filtros
-    const onSearch = () => countriesStore.setSearch(search.value)
-    const onFilter = () => countriesStore.setRegion(region.value)
+    const onSearch = () => countriesStore.setSearch(search.value);
+    const onFilter = () => countriesStore.setRegion(region.value);
 
     // Ir a detalle de país
     const goToDetail = (country: any) => {
-      router.push({ name: 'CountryDetail', params: { code: country.cca3 } })
-    }    
+      router.push({ name: "CountryDetail", params: { code: country.cca3 } });
+    };
     // Favoritos
-    const toggleFavourite = (country: any) => countriesStore.toggleFavourite(country)
+    const toggleFavourite = (country: any) => countriesStore.toggleFavourite(country);
 
     // Paginación
-    const nextPage = () => countriesStore.setPage(page.value + 1)
-    const prevPage = () => countriesStore.setPage(page.value - 1)
+    const nextPage = () => countriesStore.setPage(page.value + 1);
+    const prevPage = () => countriesStore.setPage(page.value - 1);
 
-    return { 
-      filtered, 
-      loading, 
-      error, 
-      search, 
-      region, 
-      paginated: paginatedCountries, 
-      page, 
-      totalPages, 
-      onSearch, 
-      onFilter, 
-      goToDetail, 
+    return {
+      filtered,
+      loading,
+      error,
+      search,
+      region,
+      paginated: paginatedCountries,
+      page,
+      totalPages,
+      onSearch,
+      onFilter,
+      goToDetail,
       toggleFavourite,
-      nextPage, 
-      prevPage, 
-      regions
-    }
-  }
-}
+      nextPage,
+      prevPage,
+      regions,
+    };
+  },
+};
 </script>
