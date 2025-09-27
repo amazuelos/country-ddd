@@ -1,25 +1,22 @@
-import { defineStore } from 'pinia'
-import { loadFavourites, saveFavourites } from '../../infrastructure/storage/favouritesStorage'
+import { defineStore } from "pinia";
+import type { Country } from "../../domain/models/Country";
 
-export const useFavouritesStore = defineStore('favourites', {
+export const useFavouritesStore = defineStore("favourites", {
   state: () => ({
-    favourites: [] as string[] // array de cca3 codes
+    favourites: JSON.parse(localStorage.getItem("favourites") || "[]") as string[],
   }),
-  getters: {
-    count: (state) => state.favourites.length,
-    isFavourite: (state) => (code: string) => state.favourites.includes(code)
-  },
   actions: {
-    load() {
-      this.favourites = loadFavourites()
-    },
     toggle(code: string) {
-      if (this.favourites.includes(code)) {
-        this.favourites = this.favourites.filter((c) => c !== code)
-      } else {
-        this.favourites.push(code)
-      }
-      saveFavourites(this.favourites)
-    }
-  }
-})
+      const index = this.favourites.indexOf(code);
+      if (index === -1) this.favourites.push(code);
+      else this.favourites.splice(index, 1);
+      localStorage.setItem("favourites", JSON.stringify(this.favourites));
+    },
+    load() {
+      this.favourites = JSON.parse(localStorage.getItem("favourites") || "[]");
+    },
+    isFavourite(code: string) {
+      return this.favourites.includes(code);
+    },
+  },
+});

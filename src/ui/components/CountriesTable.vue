@@ -14,7 +14,7 @@
         v-for="country in countries"
         :key="country.cca3"
         class="hover:bg-gray-50 cursor-pointer"
-        @click="emit('select', country)"
+        @click="selectCountry(country)"
       >
         <td class="border p-2">
           <img :src="country.flags.png" :alt="country.name.common" class="w-8 h-6" />
@@ -22,8 +22,10 @@
         <td class="border p-2">{{ country.name.common }}</td>
         <td class="border p-2">{{ country.region }}</td>
         <td class="border p-2">{{ country.population.toLocaleString() }}</td>
-        <td class="border p-2 text-center" @click.stop="emit('toggleFavourite', country)">
-          ⭐
+        <td class="border p-2 text-center">
+          <button @click.stop="toggleFav(country)" class="text-yellow-500">
+            {{ isFavourite(country.cca3) ? '★' : '☆' }}
+          </button>
         </td>
       </tr>
     </tbody>
@@ -32,13 +34,31 @@
 
 <script setup lang="ts">
 import type { Country } from '../../domain/models/Country'
+import { useFavouritesStore } from '../stores/useFavouritesStore'
 
+// Props
 defineProps<{
   countries: Country[]
 }>()
 
+// Emits
 const emit = defineEmits<{
   (e: 'select', country: Country): void
-  (e: 'toggleFavourite', country: Country): void
 }>()
+
+// Store de favoritos
+const favStore = useFavouritesStore()
+
+// Funciones
+const toggleFav = (country: Country) => {
+  favStore.toggle(country.cca3)
+}
+
+const isFavourite = (code: string) => {
+  return favStore.isFavourite(code)
+}
+
+const selectCountry = (country: Country) => {
+  emit('select', country)
+}
 </script>

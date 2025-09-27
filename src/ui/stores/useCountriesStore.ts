@@ -11,7 +11,7 @@ export const useCountriesStore = defineStore('countries', {
     search: '',
     region: '',
     page: 1,
-    pageSize: 10
+    pageSize: 10,
   }),
   getters: {
     paginatedCountries: (state) => {
@@ -19,7 +19,6 @@ export const useCountriesStore = defineStore('countries', {
       const end = start + state.pageSize
       return state.filtered.slice(start, end)
     },
-    totalPages: (state) => Math.ceil(state.filtered.length / state.pageSize)
   },
   actions: {
     async fetchCountries() {
@@ -55,6 +54,6 @@ export const useCountriesStore = defineStore('countries', {
     },
     setPage(page: number) {
       this.page = page
-    }
+    },
   }
 })

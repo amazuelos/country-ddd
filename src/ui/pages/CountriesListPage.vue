@@ -20,6 +20,7 @@
         :countries="paginated"
         @select="goToDetail"
         @toggleFavourite="toggleFavourite"
+        :favourites="favourites"
       />
 
       <CountriesPagination
@@ -44,17 +45,15 @@ import CountriesTable from '../components/CountriesTable.vue'
 import CountriesPagination from '../components/CountriesPagination.vue'
 
 const countriesStore = useCountriesStore()
-const { countries, filtered, paginatedCountries, loading, error, search, region, page, totalPages } = storeToRefs(countriesStore)
+const { countries, filtered, paginatedCountries, loading, error, search, region, page, totalPages, favourites } = storeToRefs(countriesStore)
 const router = useRouter()
 
 // Handlers para filtros
 const onSearch = (val: string) => {
-  console.log('onSearch invoked:', val)
   countriesStore.setSearch(val)
 }
 
 const onFilter = (val: string) => {
-  console.log('onFilter invoked:', val)
   countriesStore.setRegion(val)
 }
 
